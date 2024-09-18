@@ -1,0 +1,45 @@
+def maximize_hamming_distance(N, M, strings):
+    total_distance = 0
+    
+    for i in range(N):
+        zeros = ones = questions = 0
+        for s in strings:
+            if s[i] == '0':
+                zeros += 1
+            elif s[i] == '1':
+                ones += 1
+            else:  # '?'
+                questions += 1
+        
+        # Calculate the maximum contribution of this position to the total Hamming distance
+        total = M * (M - 1) // 2  # Total number of pairs
+        if questions == 0:
+            total_distance += zeros * ones
+        elif zeros + questions <= ones or ones + questions <= zeros:
+            # All '?' can be assigned to the minority
+            total_distance += (zeros + questions) * ones if zeros < ones else zeros * (ones + questions)
+        else:
+            # Distribute '?' to make zeros and ones as equal as possible
+            half = M // 2
+            diff = abs(zeros - ones)
+            if diff <= questions:
+                # We can make zeros and ones equal
+                total_distance += half * (M - half)
+            else:
+                # Assign all '?' to the minority
+                if zeros < ones:
+                    zeros += questions
+                else:
+                    ones += questions
+                total_distance += zeros * ones
+
+    return total_distance
+
+def solve_test_case():
+    N, M = map(int, input().split())
+    strings = [input().strip() for _ in range(M)]
+    return maximize_hamming_distance(N, M, strings)
+
+T = int(input())
+for _ in range(T):
+    print(solve_test_case())
